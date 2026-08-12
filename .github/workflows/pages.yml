@@ -22,6 +22,7 @@ jobs:
         run: |
           rustup toolchain install 1.85.0 --profile minimal --no-self-update
           rustup target add wasm32-unknown-unknown --toolchain 1.85.0
+          rustup toolchain install 1.95.0 --profile minimal --no-self-update
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
@@ -29,7 +30,7 @@ jobs:
           cache: npm
           cache-dependency-path: crates/data_toolbox_web/package-lock.json
       - name: Install wasm-pack
-        run: cargo +1.85.0 install wasm-pack --version 0.15.0 --locked
+        run: cargo +1.95.0 install wasm-pack --version 0.15.0 --locked
       - name: Install web dependencies
         working-directory: crates/data_toolbox_web
         run: npm ci --ignore-scripts

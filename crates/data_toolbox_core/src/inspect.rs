@@ -5,7 +5,7 @@ use crate::{
     MAX_INPUT_BYTES, MAX_PREVIEW_ROWS, MAX_ROWS, SCHEMA_VERSION, Severity,
 };
 
-const DELIMITER_CANDIDATES: [u8; 4] = [b',', b'\t', b';', b'|'];
+const DELIMITER_CANDIDATES: [u8; 4] = *b",\t;|";
 
 #[derive(Clone, Debug)]
 pub(crate) struct ParsedTable {
