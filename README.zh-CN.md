@@ -17,6 +17,8 @@ Miller、qsv、csvkit 和 VisiData 已经覆盖了成熟的通用表格处理能
 - 输出确定性的 CSV、TSV 或 JSON；CSV/TSV 可以显式为疑似公式单元格添加单引号，降低导入电子表格时的风险。
 - 通过原生 CLI 或本地浏览器 WASM 页面调用同一个 Rust core。
 
+如果单元格在任意前导 ASCII 空格后的第一个字符是 `=`、`+`、`-`、`@`、Tab 或回车符，则会被判定为疑似公式；这会有意包含 `-42` 等值。`preserve` 策略不会修改任何单元格；显式选择 `escape_for_spreadsheet` 后，仅为匹配的 CSV/TSV 单元格添加一个前导单引号；JSON 始终保留原值。
+
 ## 它不会做什么
 
 不会上传数据、联网、持久化、计算电子表格公式、自动修复，也不会转换 YAML/SQL/Markdown；没有 JavaScript parser fallback、MCP server 或 Agent-callable transport。结构化 JSON 只是机器可读格式，不代表已实现 Agent 集成。
@@ -30,18 +32,23 @@ cargo run -p data_toolbox_cli -- inspect --delimiter auto --headers present data
 cargo run -p data_toolbox_cli -- convert --to json --headers present data.csv
 ~~~
 
-文件参数省略或写为 `-` 时从 stdin 读取。错误以一个 JSON 对象写入 stderr；stdout 只包含请求的结果。
+文件参数省略或写为 `-` 时从 stdin 读取。错误以一个 JSON 对象写入 stderr；stdout 只包含请求的结果。成功时退出码为 `0`，CLI 语法或参数无效时为 `2`，输入、UTF-8、解析、转换或 I/O 失败时为 `1`。
 
 ## 浏览器工具
 
 ~~~bash
+rustup toolchain install 1.85.0 --profile minimal --no-self-update
+rustup target add wasm32-unknown-unknown --toolchain 1.85.0
+rustup toolchain install 1.95.0 --profile minimal --no-self-update
+cargo +1.95.0 install wasm-pack --version 0.15.0 --locked
 cd crates/data_toolbox_web
-npm ci
-npm run build:wasm
+npm ci --ignore-scripts
+npx --no-install playwright install chromium
+RUSTUP_TOOLCHAIN=1.85.0 npm run build:wasm
 npm run test:wasm-smoke
 ~~~
 
-Smoke 测试使用真实 Chromium 验证 375、768、1024 和 1440 px。手动查看时，用本地 HTTP server 服务仓库根目录，再打开 `/crates/data_toolbox_web/web/`。
+除上述 Rust toolchain 外，浏览器流程还需要 Node.js 24 和 Python 3。Linux 用户需要按提示安装 Playwright 的系统依赖，或使用 `npx --no-install playwright install --with-deps chromium`。Smoke 测试使用真实 Chromium 验证 375、768、1024 和 1440 px。手动查看时，用本地 HTTP server 服务仓库根目录，再打开 `/crates/data_toolbox_web/web/`。
 
 ## 开发检查
 

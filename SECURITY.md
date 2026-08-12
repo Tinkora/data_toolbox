@@ -11,7 +11,7 @@ The project is not released yet. Until the first hosted release, security fixes 
 
 ## Reporting a vulnerability
 
-Do not open a public issue for a vulnerability, malicious CSV, secret, or private input. After the repository is hosted, use GitHub's private vulnerability reporting channel if it is enabled. If it is not enabled, contact the Tinkora maintainers through a private GitHub channel and include the affected commit, impact, reproduction steps, and suggested mitigation.
+Do not open a public issue for a vulnerability, malicious CSV, secret, or private input. Use [GitHub Private Vulnerability Reporting](https://github.com/Tinkora/data_toolbox/security/advisories/new) and include the affected commit, impact, reproduction steps, and suggested mitigation. This private channel is enabled and is a publication requirement for the repository.
 
 Do not include real credentials or private user data. We will acknowledge a credible report, coordinate a fix, and publish only the minimum information needed for users to assess impact.
 

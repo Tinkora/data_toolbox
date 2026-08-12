@@ -11,7 +11,7 @@
 
 ## 报告漏洞
 
-不要为漏洞、恶意 CSV、secret 或私有输入创建公开 issue。仓库托管后，如果启用了 GitHub 私密漏洞报告渠道，请使用该渠道；如果未启用，请通过 GitHub 私密渠道联系 Tinkora 维护者，并附上受影响 commit、影响、复现步骤和建议的缓解方案。
+不要为漏洞、恶意 CSV、secret 或私有输入创建公开 issue。请使用 [GitHub 私密漏洞报告](https://github.com/Tinkora/data_toolbox/security/advisories/new)，并附上受影响 commit、影响、复现步骤和建议的缓解方案。本仓库已启用该私密渠道，并将其作为公开发布的必要条件。
 
 不要包含真实凭据或私有用户数据。我们会确认可信报告、协调修复，并只发布用户评估影响所需的最少信息。
 
