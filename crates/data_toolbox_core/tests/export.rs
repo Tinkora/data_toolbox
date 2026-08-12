@@ -44,6 +44,20 @@ fn explicit_spreadsheet_policy_prefixes_formula_like_cells_once() {
 }
 
 #[test]
+fn spreadsheet_policy_covers_every_declared_formula_prefix() {
+    let cases = ["=1+1", "+1", "-1", "@SUM(A1)", "\tvalue", "\rvalue"];
+
+    for value in cases {
+        let input = format!("value\n\"{value}\"\n");
+        let output =
+            convert(&input, &csv_options(FormulaPolicy::EscapeForSpreadsheet)).expect("valid CSV");
+
+        assert!(output.content.contains(&format!("'{value}")));
+        assert_eq!(output.diagnostics[0].code, "FORMULA_LIKE_CELL");
+    }
+}
+
+#[test]
 fn csv_export_canonically_quotes_commas_quotes_crlf_and_empty_final_fields() {
     let input = "name,note,last\r\nAlice,\"line 1\r\nline \"\"2\"\", comma\",\r\n";
 
