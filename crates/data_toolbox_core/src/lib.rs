@@ -1,7 +1,9 @@
 mod error;
+mod inspect;
 mod model;
 
 pub use error::{CoreError, ErrorEnvelope};
+pub use inspect::inspect;
 pub use model::{
     Conversion, ConvertOptions, DelimiterMode, Diagnostic, FormulaPolicy, HeaderMode,
     InspectOptions, Inspection, OutputFormat, Severity,
