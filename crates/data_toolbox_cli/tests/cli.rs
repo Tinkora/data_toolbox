@@ -29,6 +29,13 @@ fn run(args: &[&str], input: &str) -> Output {
     child.wait_with_output().expect("CLI exits")
 }
 
+fn run_without_input(args: &[&str]) -> Output {
+    Command::new(binary())
+        .args(args)
+        .output()
+        .expect("CLI exits")
+}
+
 fn temporary_path() -> PathBuf {
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -111,7 +118,7 @@ fn malformed_input_uses_json_stderr_and_nonzero_exit() {
 
 #[test]
 fn invalid_arguments_use_a_stable_json_error() {
-    let output = run(&["convert", "--to", "yaml"], "a,b\n1,2\n");
+    let output = run_without_input(&["convert", "--to", "yaml"]);
 
     assert_eq!(output.status.code(), Some(2));
     assert!(output.stdout.is_empty());
@@ -122,10 +129,7 @@ fn invalid_arguments_use_a_stable_json_error() {
 
 #[test]
 fn repeated_options_are_rejected_instead_of_silently_overridden() {
-    let output = run(
-        &["inspect", "--delimiter", "comma", "--delimiter", "tab"],
-        "a,b\n1,2\n",
-    );
+    let output = run_without_input(&["inspect", "--delimiter", "comma", "--delimiter", "tab"]);
 
     assert_eq!(output.status.code(), Some(2));
     let value: serde_json::Value =
