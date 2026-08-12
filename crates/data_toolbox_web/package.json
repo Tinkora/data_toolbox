@@ -1,0 +1,13 @@
+{
+  "name": "@tinkora/data-toolbox-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:wasm": "wasm-pack build --target web --release --out-dir web/pkg .",
+    "test:wasm-smoke": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
+  }
+}

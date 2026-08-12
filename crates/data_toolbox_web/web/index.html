@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Inspect local CSV and TSV structure without uploading data.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    <title>CSV Inspector | Tinkora Data Toolbox</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#inspector">Skip to inspector</a>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <div>
+          <p class="eyebrow">Tinkora Data Toolbox</p>
+          <h1>CSV Inspector</h1>
+        </div>
+        <div class="runtime" aria-live="polite">
+          <span class="runtime-dot" aria-hidden="true"></span>
+          <span id="wasm-status" role="status">Loading</span>
+        </div>
+      </div>
+    </header>
+
+    <main id="inspector" class="shell page-content">
+      <section class="intro" aria-labelledby="intro-title">
+        <div>
+          <p class="kicker">Local-first data quality</p>
+          <h2 id="intro-title">See structural risk before it reaches your tools.</h2>
+        </div>
+        <p class="intro-copy">Paste or open CSV/TSV text to inspect its shape, formula-like cells, and bounded preview. Your data stays in this browser tab.</p>
+      </section>
+
+      <div id="fatal-error" class="message error" role="alert" hidden></div>
+
+      <section class="workspace" aria-label="CSV inspection workspace">
+        <article class="panel input-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-label">01 / Input</p>
+              <h2>Source data</h2>
+            </div>
+            <span class="limit-note">10 MiB max</span>
+          </div>
+          <label for="csv-input">CSV or TSV input</label>
+          <textarea id="csv-input" spellcheck="false" placeholder="name,role&#10;Alice,owner"></textarea>
+          <div class="action-row">
+            <label class="button button-secondary file-button" for="file-input">
+              Load file
+            </label>
+            <input id="file-input" type="file" accept=".csv,.tsv,text/csv,text/tab-separated-values" hidden>
+            <button class="button button-secondary" id="clear-button" type="button">Clear</button>
+            <button class="button button-primary" id="inspect-button" type="button" disabled>Inspect data</button>
+          </div>
+          <div class="option-grid">
+            <div class="field">
+              <label for="delimiter">Delimiter</label>
+              <select id="delimiter">
+                <option value="auto">Auto-detect</option>
+                <option value="comma">Comma (,)</option>
+                <option value="tab">Tab</option>
+                <option value="semicolon">Semicolon (;)</option>
+                <option value="pipe">Pipe (|)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="headers">Headers</label>
+              <select id="headers">
+                <option value="present">First row is headers</option>
+                <option value="absent">No headers</option>
+              </select>
+            </div>
+          </div>
+          <p class="privacy-note"><span aria-hidden="true">●</span> Nothing is uploaded or saved.</p>
+        </article>
+
+        <article class="panel result-panel" aria-labelledby="result-title">
+          <div class="panel-heading">
+            <div>
+              <p class="section-label">02 / Findings</p>
+              <h2 id="result-title">Inspection result</h2>
+            </div>
+            <span id="result-state" class="state-badge">Waiting for input</span>
+          </div>
+          <div id="empty-state" class="empty-state">
+            <div class="empty-mark" aria-hidden="true">//</div>
+            <p>Run an inspection to see row counts, diagnostics, and a safe preview.</p>
+          </div>
+          <div id="result-content" hidden>
+            <dl class="metrics">
+              <div><dt>Rows</dt><dd id="row-count">0</dd></div>
+              <div><dt>Columns</dt><dd id="column-count">0</dd></div>
+              <div><dt>Delimiter</dt><dd id="selected-delimiter">-</dd></div>
+              <div><dt>Diagnostics</dt><dd id="diagnostic-count">0</dd></div>
+            </dl>
+            <div class="result-section">
+              <div class="subheading"><h3>Diagnostics</h3><span class="muted">Ordered by appearance</span></div>
+              <ul id="diagnostics" class="diagnostics"></ul>
+            </div>
+            <div class="result-section">
+              <div class="subheading"><h3>Preview</h3><span class="muted">First 100 rows</span></div>
+              <div class="table-wrap"><table id="preview-table"><caption class="sr-only">CSV preview</caption><thead></thead><tbody></tbody></table></div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel export-panel" aria-labelledby="export-title">
+        <div class="panel-heading">
+          <div>
+            <p class="section-label">03 / Export</p>
+            <h2 id="export-title">Make an explicit copy</h2>
+          </div>
+          <span class="limit-note">Deterministic CRLF</span>
+        </div>
+        <div class="export-controls">
+          <div class="field"><label for="output-format">Format</label><select id="output-format"><option value="csv">CSV</option><option value="tsv">TSV</option><option value="json">JSON</option></select></div>
+          <div class="field"><label for="formula-policy">Formula policy</label><select id="formula-policy"><option value="preserve">Preserve source text</option><option value="escape_for_spreadsheet">Escape for spreadsheet</option></select></div>
+          <button class="button button-primary" id="export-button" type="button" disabled>Create export</button>
+        </div>
+        <label for="export-output">Export output</label>
+        <textarea id="export-output" class="export-output" readonly placeholder="Your generated copy will appear here."></textarea>
+      </section>
+    </main>
+    <footer class="shell site-footer"><span>Runs locally in your browser.</span><span>CSV / TSV · v0.1 contract</span></footer>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

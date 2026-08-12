@@ -1,5 +1,9 @@
 [workspace]
-members = ["crates/data_toolbox_cli", "crates/data_toolbox_core"]
+members = [
+    "crates/data_toolbox_cli",
+    "crates/data_toolbox_core",
+    "crates/data_toolbox_web",
+]
 resolver = "3"
 
 [workspace.package]
