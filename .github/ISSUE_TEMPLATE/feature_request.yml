@@ -1,0 +1,26 @@
+name: Feature request
+description: Propose a narrow improvement tied to a real user pain point.
+title: "feat: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: pain
+    attributes:
+      label: User pain
+      description: Who encounters this problem, and how can it be reproduced?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed scope
+      description: Explain the smallest useful change and what it deliberately does not include.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Existing alternatives
+      description: Which mature tools or workflows were considered, and why are they insufficient here?
+    validations:
+      required: true

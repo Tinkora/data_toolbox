@@ -1,0 +1,35 @@
+name: Bug report
+description: Report a reproducible defect in the CLI or local browser tool.
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include secrets, private CSV content, credentials, or vulnerability details. Use SECURITY.md for security reports.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Provide the smallest non-sensitive input and exact steps.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Rust/Node/browser versions, and CLI or browser path.
+    validations:
+      required: true

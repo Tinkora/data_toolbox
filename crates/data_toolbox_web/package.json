@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build:wasm": "wasm-pack build --target web --release --out-dir web/pkg .",
-    "test:wasm-smoke": "playwright test"
+    "prepare:wasm-smoke": "node scripts/prepare-wasm-smoke.mjs",
+    "test:prepare-wasm-smoke": "node --test scripts/prepare-wasm-smoke.test.mjs",
+    "test:wasm-smoke": "npm run test:prepare-wasm-smoke && npm run prepare:wasm-smoke && playwright test"
   },
   "devDependencies": {
     "@playwright/test": "1.62.1"

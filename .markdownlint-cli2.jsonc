@@ -1,0 +1,1 @@
+{"config":{"MD013":false,"MD031":false,"MD060":false},"ignores":["**/blob-report/**","**/node_modules/**","**/pkg/**","**/playwright-report/**","**/target/**","**/test-results/**"]}

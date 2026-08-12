@@ -1,0 +1,32 @@
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
+    groups:
+      rust-dependencies:
+        patterns: ["*"]
+  - package-ecosystem: npm
+    directory: /crates/data_toolbox_web
+    schedule:
+      interval: weekly
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
+    groups:
+      npm-dependencies:
+        patterns: ["*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      timezone: Asia/Shanghai
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7

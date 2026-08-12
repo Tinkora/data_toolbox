@@ -3,6 +3,8 @@ name = "data_toolbox_core"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
 
 [dependencies]
 csv = "1.4"

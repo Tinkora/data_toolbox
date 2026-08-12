@@ -3,6 +3,8 @@ name = "data_toolbox_cli"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
 publish = false
 
 [[bin]]
@@ -10,5 +12,5 @@ name = "data-toolbox"
 path = "src/main.rs"
 
 [dependencies]
-data_toolbox_core = { path = "../data_toolbox_core" }
+data_toolbox_core = { version = "0.1.0", path = "../data_toolbox_core" }
 serde_json = "1.0"

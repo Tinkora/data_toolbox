@@ -1,0 +1,62 @@
+name: Pages
+
+'on':
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-site:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Set up Rust
+        run: |
+          rustup toolchain install 1.85.0 --profile minimal --no-self-update
+          rustup target add wasm32-unknown-unknown --toolchain 1.85.0
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: crates/data_toolbox_web/package-lock.json
+      - name: Install wasm-pack
+        run: cargo +1.85.0 install wasm-pack --version 0.15.0 --locked
+      - name: Install web dependencies
+        working-directory: crates/data_toolbox_web
+        run: npm ci --ignore-scripts
+      - name: Build WASM package
+        working-directory: crates/data_toolbox_web
+        env:
+          RUSTUP_TOOLCHAIN: 1.85.0
+        run: npm run build:wasm
+      - name: Stage static site
+        run: |
+          mkdir -p site
+          cp -R crates/data_toolbox_web/web/. site/
+      - name: Upload site artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pages-site
+          path: site
+          if-no-files-found: error
+          retention-days: 1
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build-site
+    permissions:
+      contents: read
+      id-token: write
+      pages: write
+    uses: Tinkora/.github/.github/workflows/reusable-pages.yml@21145ce218263e3b30359bab0c748da4702f801b
+    with:
+      source-artifact-name: pages-site
+      source-subdirectory: .
