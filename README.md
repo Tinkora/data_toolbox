@@ -4,6 +4,8 @@ Local CSV/TSV inspection for people who need to understand a file before it reac
 
 [简体中文](README.zh-CN.md)
 
+[![Support Tinkora on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/tinkora)
+
 ## Why this exists
 
 Mature tools such as Miller, qsv, csvkit, and VisiData already cover broad table processing. This project stays intentionally narrow: it reports shape and safety risks without silently changing the input. It is useful when data is sensitive, a CLI is unavailable, or a quick browser check is safer than opening a file in a spreadsheet.
@@ -69,7 +71,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [SUPPORT.md]
 ## Maturity and license
 
 The project is currently **Draft** until the hosted Tinkora CI baseline has produced evidence for this repository. Capability labels and evidence rules are documented in [docs/MATURITY.md](docs/MATURITY.md). The code is released under the [MIT License](LICENSE).
-
-## Sponsorship
-
-If this tool saves you time, support the maintainers through the Tinkora organization's Buy Me a Coffee page when one is published. Sponsorship is optional and never a condition of use, support, or contribution.

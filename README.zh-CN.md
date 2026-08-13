@@ -4,6 +4,8 @@
 
 [English](README.md)
 
+[![在 Ko-fi 上支持 Tinkora](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/tinkora)
+
 ## 为什么需要它
 
 Miller、qsv、csvkit 和 VisiData 已经覆盖了成熟的通用表格处理能力。本项目保持窄范围：只报告结构和安全风险，不静默修改输入。当数据敏感、无法安装 CLI，或者打开电子表格反而不安全时，可以先用它做一次快速检查。
@@ -69,7 +71,3 @@ ruby scripts/check_workflow_contracts.rb
 ## 成熟度与许可证
 
 在 Tinkora 托管 CI 为本仓库生成证据之前，项目处于 **Draft**。能力标签和证据规则见 [docs/MATURITY.zh-CN.md](docs/MATURITY.zh-CN.md)。代码使用 [MIT License](LICENSE) 发布。
-
-## 赞助
-
-如果这个工具帮你节省了时间，可以在 Tinkora 组织发布 Buy Me a Coffee 页面后自愿支持维护者。赞助不是使用、支持或贡献的条件。
