@@ -80,4 +80,9 @@ ruby scripts/check_workflow_contracts.rb
 
 ## 成熟度与许可证
 
-在 Tinkora 托管 CI 为本仓库生成证据之前，项目处于 **Draft**。能力标签和证据规则见 [docs/MATURITY.zh-CN.md](docs/MATURITY.zh-CN.md)。代码使用 [MIT License](LICENSE) 发布。
+项目当前为 **Alpha** 版本。托管质量、文档、供应链、CodeQL、Pages 和四视口浏览器检查已在 tag commit 上通过。工具可由原生 CLI 和浏览器界面供人使用，但 JSON 输出只是机器可读格式，不代表 Agent-callable。
+
+- **在线体验：** [GitHub Pages](https://tinkora.github.io/data_toolbox/)
+- **最新候选版本：** [v0.1.0-alpha.1 Release](https://github.com/Tinkora/data_toolbox/releases/tag/v0.1.0-alpha.1)
+
+能力标签和证据规则见 [docs/MATURITY.zh-CN.md](docs/MATURITY.zh-CN.md)。代码使用 [MIT License](LICENSE) 发布。

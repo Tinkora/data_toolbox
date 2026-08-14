@@ -1,6 +1,6 @@
 # 成熟度与能力标签
 
-在 Tinkora 托管 workflow 为准确仓库和 commit 生成证据之前，项目处于 **Draft**。证据出现前不得添加成熟度 badge。
+项目在 `v0.1.0-alpha.1` 时为 **Alpha**。tag commit 已有 native、WASM、浏览器、文档、安全和供应链托管证据。不得仅凭此版本推断 Beta 或 Stable 支持。
 
 ## 证据等级
 

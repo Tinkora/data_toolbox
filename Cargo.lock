@@ -47,7 +47,7 @@ dependencies = [
 
 [[package]]
 name = "data_toolbox_cli"
-version = "0.1.0"
+version = "0.1.0-alpha.1"
 dependencies = [
  "data_toolbox_core",
  "serde_json",
@@ -55,7 +55,7 @@ dependencies = [
 
 [[package]]
 name = "data_toolbox_core"
-version = "0.1.0"
+version = "0.1.0-alpha.1"
 dependencies = [
  "csv",
  "serde",
@@ -65,7 +65,7 @@ dependencies = [
 
 [[package]]
 name = "data_toolbox_web"
-version = "0.1.0"
+version = "0.1.0-alpha.1"
 dependencies = [
  "console_error_panic_hook",
  "data_toolbox_core",

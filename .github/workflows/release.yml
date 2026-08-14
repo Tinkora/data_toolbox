@@ -57,11 +57,18 @@ jobs:
           rustup toolchain install 1.95.0 --profile minimal --no-self-update
           cargo +1.95.0 install wasm-pack --version 0.15.0 --locked
       - name: Validate release candidate
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
         run: |
           cargo +1.85.0 fmt --all -- --check
           cargo +1.85.0 test --workspace --locked
           cargo +1.85.0 clippy --workspace --all-targets --locked -- -D warnings
           cargo +1.85.0 check -p data_toolbox_web --target wasm32-unknown-unknown --locked
+          workspace_versions="$(cargo +1.85.0 metadata --no-deps --locked --format-version 1 | jq -r '.packages[].version' | sort -u)"
+          [[ "$workspace_versions" == "${VERSION}" ]] || {
+            echo "workspace package versions must equal ${VERSION}; found ${workspace_versions}" >&2
+            exit 1
+          }
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
@@ -84,19 +91,183 @@ jobs:
           set -euo pipefail
           mkdir -p release-assets
           git archive --format=tar.gz --prefix="data-toolbox-$VERSION/" -o "release-assets/data-toolbox-$VERSION-source.tar.gz" HEAD
+          shasum -a 256 \
+            "release-assets/data-toolbox-$VERSION-source.tar.gz" \
+            > "release-assets/data-toolbox-$VERSION-source.tar.gz.sha256"
           printf '%s\n' "{\"commit\":\"$GITHUB_SHA\",\"version\":\"$VERSION\"}" > release-assets/release-metadata.json
       - name: Upload candidate source artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: release-source-${{ steps.version.outputs.value }}
+          name: release-source-checks-${{ steps.version.outputs.value }}
           path: release-assets
           if-no-files-found: error
           retention-days: 7
+  build-cli:
+    name: Build ${{ matrix.platform }} CLI
+    needs: verify
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            platform: linux-x86_64
+            binary: data-toolbox
+          - runner: macos-15
+            target: aarch64-apple-darwin
+            platform: macos-arm64
+            binary: data-toolbox
+          - runner: macos-15
+            target: x86_64-apple-darwin
+            platform: macos-x86_64
+            binary: data-toolbox
+          - runner: windows-2025
+            target: x86_64-pc-windows-msvc
+            platform: windows-x86_64
+            binary: data-toolbox.exe
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    steps:
+      - name: Check out release commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Install Rust target
+        shell: bash
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.0 --profile minimal --no-self-update
+          rustup target add "${TARGET}" --toolchain 1.85.0
+      - name: Build release binary
+        shell: bash
+        env:
+          RUSTUP_TOOLCHAIN: 1.85.0
+          TARGET: ${{ matrix.target }}
+        run: cargo build -p data_toolbox_cli --release --locked --target "${TARGET}"
+      - name: Package Unix archive
+        if: runner.os != 'Windows'
+        shell: bash
+        env:
+          BINARY: ${{ matrix.binary }}
+          PLATFORM: ${{ matrix.platform }}
+          TARGET: ${{ matrix.target }}
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          set -euo pipefail
+          asset="data-toolbox-${VERSION}-${PLATFORM}"
+          mkdir -p "staging/${asset}" dist
+          cp "target/${TARGET}/release/${BINARY}" "staging/${asset}/"
+          cp LICENSE README.md README.zh-CN.md CHANGELOG.md "staging/${asset}/"
+          tar -czf "dist/${asset}.tar.gz" -C staging "${asset}"
+          (cd dist && shasum -a 256 "${asset}.tar.gz" > "${asset}.tar.gz.sha256")
+      - name: Package Windows archive
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          BINARY: ${{ matrix.binary }}
+          PLATFORM: ${{ matrix.platform }}
+          TARGET: ${{ matrix.target }}
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $asset = "data-toolbox-$env:VERSION-$env:PLATFORM"
+          $packageDir = "staging/$asset"
+          New-Item -ItemType Directory -Path $packageDir, dist -Force | Out-Null
+          Copy-Item "target/$env:TARGET/release/$env:BINARY" $packageDir
+          Copy-Item LICENSE, README.md, README.zh-CN.md, CHANGELOG.md $packageDir
+          Compress-Archive -Path $packageDir -DestinationPath "dist/$asset.zip"
+          $hash = (Get-FileHash "dist/$asset.zip" -Algorithm SHA256).Hash.ToLowerInvariant()
+          [IO.File]::WriteAllText(
+            "$PWD/dist/$asset.zip.sha256",
+            "$hash  $asset.zip`n",
+            [Text.UTF8Encoding]::new($false)
+          )
+      - name: Upload CLI artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: data-toolbox-cli-${{ matrix.platform }}-${{ needs.verify.outputs.version }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 7
+
+  assemble:
+    name: Assemble release source
+    needs: [verify, build-cli]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Download source checks
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: release-source-checks-${{ needs.verify.outputs.version }}
+          path: release-assets
+      - name: Download CLI archives
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: data-toolbox-cli-*-${{ needs.verify.outputs.version }}
+          merge-multiple: true
+          path: release-assets
+      - name: Verify assembled assets
+        run: |
+          set -euo pipefail
+          test -f release-assets/release-metadata.json
+          test "$(find release-assets -maxdepth 1 -type f -name '*.tar.gz' | wc -l | tr -d ' ')" = 4
+          test "$(find release-assets -maxdepth 1 -type f -name '*.zip' | wc -l | tr -d ' ')" = 1
+          test "$(find release-assets -maxdepth 1 -type f -name '*.sha256' | wc -l | tr -d ' ')" = 5
+      - name: Upload complete source artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: release-source-${{ needs.verify.outputs.version }}
+          path: release-assets
+          if-no-files-found: error
+          retention-days: 7
+
   prepare:
     if: github.ref_type == 'tag'
-    needs: verify
+    needs: [verify, assemble]
     uses: Tinkora/.github/.github/workflows/reusable-release.yml@21145ce218263e3b30359bab0c748da4702f801b
     with:
       source-artifact-name: release-source-${{ needs.verify.outputs.version }}
       version: ${{ needs.verify.outputs.version }}
       publish: false
+
+  attest:
+    name: Attest release candidate
+    if: github.ref_type == 'tag'
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Download release candidate
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: ${{ needs.prepare.outputs.candidate-artifact-name }}
+          path: candidate
+      - name: Verify candidate assets
+        run: |
+          set -euo pipefail
+          test -f candidate/SHA256SUMS
+          test -f candidate/SBOM.spdx.json
+          test -f candidate/LICENSES.json
+          test "$(find candidate -maxdepth 1 -type f -name '*.tar.gz' | wc -l | tr -d ' ')" = 4
+          test "$(find candidate -maxdepth 1 -type f -name '*.zip' | wc -l | tr -d ' ')" = 1
+          (cd candidate && shasum -a 256 -c SHA256SUMS)
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-path: |
+            candidate/*.tar.gz
+            candidate/*.zip
+      - name: Attest SBOM
+        uses: actions/attest-sbom@4651f806c01d8637787e274ac3bdf724ef169f34
+        with:
+          subject-path: |
+            candidate/*.tar.gz
+            candidate/*.zip
+          sbom-path: candidate/SBOM.spdx.json

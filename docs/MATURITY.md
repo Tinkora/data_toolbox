@@ -1,6 +1,6 @@
 # Maturity and capability labels
 
-The project is **Draft** until the hosted Tinkora workflows produce evidence for this exact repository and commit. Do not add a maturity badge before that evidence exists.
+The project is **Alpha** at `v0.1.0-alpha.1`. The tagged commit has hosted evidence for native, WASM, browser, documentation, security, and supply-chain checks. Do not infer Beta or Stable support from this release.
 
 ## Evidence levels
 

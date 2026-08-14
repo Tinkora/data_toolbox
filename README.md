@@ -80,4 +80,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [SUPPORT.md]
 
 ## Maturity and license
 
-The project is currently **Draft** until the hosted Tinkora CI baseline has produced evidence for this repository. Capability labels and evidence rules are documented in [docs/MATURITY.md](docs/MATURITY.md). The code is released under the [MIT License](LICENSE).
+The project is an **Alpha** release. The hosted quality, documentation, supply-chain, CodeQL, Pages, and four-viewport browser checks passed for the tagged commit. It is human-usable through the native CLI and browser UI, while its JSON output remains machine-readable rather than Agent-callable.
+
+- **Try it:** [GitHub Pages](https://tinkora.github.io/data_toolbox/)
+- **Latest candidate:** [v0.1.0-alpha.1 release](https://github.com/Tinkora/data_toolbox/releases/tag/v0.1.0-alpha.1)
+
+Capability labels and evidence rules are documented in [docs/MATURITY.md](docs/MATURITY.md). The code is released under the [MIT License](LICENSE).

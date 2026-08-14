@@ -2,11 +2,11 @@
 
 ## Supported versions
 
-The project is not released yet. Until the first hosted release, security fixes are applied to `main`.
+The project is in Alpha. Security fixes are applied to the latest supported tag and `main`.
 
 | Version | Supported |
 | --- | --- |
-| `main` | Yes |
+| `v0.1.0-alpha.1`, `main` | Yes |
 | Unmodified local copies | No commitment |
 
 ## Reporting a vulnerability
